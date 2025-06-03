@@ -1,0 +1,1 @@
+from training.datasets.mnist import MNISTTrainer
