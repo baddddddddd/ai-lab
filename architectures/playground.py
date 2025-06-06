@@ -2,36 +2,44 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class FashionMNISTNet(nn.Module):
+class PlaygroundNet(nn.Module):
     def __init__(self):
         super().__init__()
-        
+
         self.features = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, padding=1),  # 28x28 -> 28x28
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),  # 28x28 -> 28x28
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),  # 28x28 -> 14x14
-            nn.Dropout(0.25),
-            
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),  # 14x14
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),  # 14x14 -> 7x7
-            nn.Dropout(0.25)
+            # (1, 28, 28)
+
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1), # -> (64, 32, 32)
+            nn.ReLU(),
+
+            nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, padding=1), # -> (64, 32, 32)
+            nn.ReLU(),
+
+            nn.MaxPool2d(kernel_size=2, stride=2), # -> (32, 16, 16)
+
+            ##################
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1), # -> (64, 16, 16)
+            nn.ReLU(),
+
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding=1), # -> (64, 16, 16)
+            nn.ReLU(),
+
+            nn.MaxPool2d(kernel_size=2, stride=2), # -> (64, 8, 8)
         )
-        
-        self.classifier = nn.Sequential(
-            nn.Flatten(),  # 128 * 7 * 7 = 6272
-            nn.Linear(128 * 7 * 7, 256),
-            nn.ReLU(inplace=True),
-            nn.Dropout(0.5),
-            nn.Linear(256, 10)
+
+        self.classification = nn.Sequential(
+            nn.Flatten(),
+
+            nn.Linear(64 * 8 * 8, 32),
+            nn.ReLU(),
+
+            nn.Linear(32, 32),
+            nn.ReLU(),
+
+            nn.Linear(32, 10),
         )
 
     def forward(self, x):
         x = self.features(x)
-        x = self.classifier(x)
+        x = self.classification(x)
         return x

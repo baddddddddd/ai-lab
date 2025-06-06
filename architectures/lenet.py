@@ -23,7 +23,7 @@ class LeNet5(nn.Module):
 
             nn.Flatten(),
 
-            nn.Linear(5 * 5 * 16, 120),
+            nn.Linear(6 * 6 * 16, 120),
             nn.Tanh(),
 
             nn.Linear(120, 84),
